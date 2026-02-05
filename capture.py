@@ -116,11 +116,17 @@ def is_reasonable_crop(crop_box: Tuple[int, int, int, int]) -> bool:
 async def scroll_to_today_section(page, offset: int) -> None:
     try:
         heading = page.get_by_text("I Dag", exact=True).first
-        await heading.scroll_into_view_if_needed()
-        await page.wait_for_timeout(500)
+        await heading.wait_for(state="visible", timeout=5000)
+        box = await heading.bounding_box()
+        if box:
+            target_y = max(0, int(box["y"]) + offset)
+            await page.evaluate("window.scrollTo(0, arguments[0])", target_y)
+            await page.wait_for_timeout(800)
+            return
+
         if offset:
             await page.evaluate("window.scrollBy(0, arguments[0])", offset)
-            await page.wait_for_timeout(500)
+            await page.wait_for_timeout(800)
     except Exception:
         return
 
