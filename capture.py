@@ -10,8 +10,8 @@ URL = "https://metropol.vartoslo.no/events"
 OUTPUT_PATH = "events.jpg"
 MAX_BYTES = 100_000
 VIEWPORT = {
-    "width": int(os.getenv("VIEWPORT_WIDTH", "2600")),
-    "height": int(os.getenv("VIEWPORT_HEIGHT", "1800")),
+    "width": int(os.getenv("VIEWPORT_WIDTH", "1300")),
+    "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
 SCROLL_OFFSET = 550
