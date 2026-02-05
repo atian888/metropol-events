@@ -14,7 +14,7 @@ VIEWPORT = {
     "height": int(os.getenv("VIEWPORT_HEIGHT", "1800")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
-SCROLL_OFFSET = 560
+SCROLL_OFFSET = 550
 LEFT_TRIM = int(os.getenv("LEFT_TRIM", "0"))
 DEVICE_SCALE = int(os.getenv("DEVICE_SCALE", "2"))
 
