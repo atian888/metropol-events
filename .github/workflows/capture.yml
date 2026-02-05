@@ -2,13 +2,14 @@ name: Capture Metropol Events
 
 on:
   schedule:
-    - cron: '30 5 * * *'
-    - cron: '0 13 * * *'
+    - cron: '0 6 * * *'
+    - cron: '0 14 * * *'
   workflow_dispatch:
 
 jobs:
   capture:
     runs-on: ubuntu-22.04
+    container: mcr.microsoft.com/playwright/python:v1.40.0-jammy
     
     steps:
       - name: Checkout repository
@@ -22,7 +23,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          playwright install --with-deps chromium
       
       - name: Capture screenshot
         run: python capture.py
