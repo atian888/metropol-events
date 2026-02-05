@@ -123,7 +123,7 @@ async def scroll_to_today_section(page, offset: int) -> None:
             # Scroll so the card is near the top with some padding
             padding = 20
             target_y = max(0, int(box["y"]) - padding)
-            await page.evaluate("window.scrollTo(0, arguments[0])", target_y)
+            await page.evaluate(f"window.scrollTo(0, {target_y})")
             await page.wait_for_timeout(1000)
             return
     except Exception:
@@ -131,7 +131,7 @@ async def scroll_to_today_section(page, offset: int) -> None:
 
     # Fallback: just scroll by the offset amount
     if offset:
-        await page.evaluate("window.scrollTo(0, arguments[0])", offset)
+        await page.evaluate(f"window.scrollTo(0, {offset})")
         await page.wait_for_timeout(1000)
 
 
