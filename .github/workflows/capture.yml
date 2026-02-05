@@ -10,6 +10,8 @@ jobs:
   capture:
     runs-on: ubuntu-22.04
     container: mcr.microsoft.com/playwright/python:v1.40.0-jammy
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     
     steps:
       - name: Checkout repository
