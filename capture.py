@@ -11,11 +11,11 @@ OUTPUT_PATH = "events.jpg"
 MAX_BYTES = 100_000
 VIEWPORT = {
     "width": int(os.getenv("VIEWPORT_WIDTH", "1400")),
-    "height": int(os.getenv("VIEWPORT_HEIGHT", "1400")),
+    "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
 
 # Default crop box (left, top, right, bottom). Used as fallback.
-DEFAULT_CROP_BOX = (50, 600, 800, 0)
+DEFAULT_CROP_BOX = (0, 150, VIEWPORT["width"], min(VIEWPORT["height"], 750))
 
 # Provide a selector for the event cards via env if you can inspect it.
 # Example: CARD_SELECTOR="a.card" or ".event-card"
@@ -36,7 +36,7 @@ async def capture_events():
             await dismiss_cookie_banner(page)
 
             crop_box = await get_cards_crop_box(page, CARD_SELECTOR)
-            if crop_box is None:
+            if crop_box is None or not is_reasonable_crop(crop_box):
                 crop_box = DEFAULT_CROP_BOX
 
             screenshot_bytes = await page.screenshot(type="png")
@@ -45,6 +45,8 @@ async def capture_events():
 
     img = Image.open(io.BytesIO(screenshot_bytes))
     crop_box = normalize_crop_box(crop_box, img.width, img.height)
+    if not is_reasonable_crop(crop_box):
+        crop_box = normalize_crop_box(DEFAULT_CROP_BOX, img.width, img.height)
     img_cropped = img.crop(crop_box).convert("RGB")
 
     save_jpeg_under_size(img_cropped, OUTPUT_PATH, MAX_BYTES)
@@ -93,6 +95,11 @@ def normalize_crop_box(
         return DEFAULT_CROP_BOX
 
     return (left, top, right, bottom)
+
+
+def is_reasonable_crop(crop_box: Tuple[int, int, int, int]) -> bool:
+    left, top, right, bottom = crop_box
+    return (right - left) >= 200 and (bottom - top) >= 200
 
 
 async def dismiss_cookie_banner(page) -> None:
