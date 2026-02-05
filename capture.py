@@ -14,15 +14,16 @@ VIEWPORT = {
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
-SCROLL_OFFSET = 550
+SCROLL_OFFSET = 560
 LEFT_TRIM = int(os.getenv("LEFT_TRIM", "0"))
+DEVICE_SCALE = int(os.getenv("DEVICE_SCALE", "2"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
     70,
-    0,
-    700,
-    900
+    10,
+    650,
+    800
 )
 
 # Provide a selector for the event cards via env if you can inspect it.
@@ -36,7 +37,7 @@ CARD_SELECTOR = os.getenv(
 async def capture_events():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        page = await browser.new_page(viewport=VIEWPORT)
+        page = await browser.new_page(viewport=VIEWPORT, device_scale_factor=DEVICE_SCALE)
 
         try:
             await page.goto(URL, wait_until="networkidle")
