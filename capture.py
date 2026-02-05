@@ -14,12 +14,12 @@ VIEWPORT = {
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
-SCROLL_OFFSET = 800
+SCROLL_OFFSET = 550
 LEFT_TRIM = int(os.getenv("LEFT_TRIM", "0"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
-    0,
+    70,
     0,
     700,
     900
@@ -114,21 +114,25 @@ def is_reasonable_crop(crop_box: Tuple[int, int, int, int]) -> bool:
 
 
 async def scroll_to_today_section(page, offset: int) -> None:
+    # Try to scroll first visible card to the top of the viewport
     try:
-        heading = page.get_by_text("I Dag", exact=True).first
-        await heading.wait_for(state="visible", timeout=5000)
-        box = await heading.bounding_box()
+        card = page.locator(CARD_SELECTOR).first
+        await card.wait_for(state="visible", timeout=5000)
+        box = await card.bounding_box()
         if box:
-            target_y = max(0, int(box["y"]) + offset)
+            # Scroll so the card is near the top with some padding
+            padding = 20
+            target_y = max(0, int(box["y"]) - padding)
             await page.evaluate("window.scrollTo(0, arguments[0])", target_y)
-            await page.wait_for_timeout(800)
+            await page.wait_for_timeout(1000)
             return
-
-        if offset:
-            await page.evaluate("window.scrollBy(0, arguments[0])", offset)
-            await page.wait_for_timeout(800)
     except Exception:
-        return
+        pass
+
+    # Fallback: just scroll by the offset amount
+    if offset:
+        await page.evaluate("window.scrollTo(0, arguments[0])", offset)
+        await page.wait_for_timeout(1000)
 
 
 async def dismiss_cookie_banner(page) -> None:
