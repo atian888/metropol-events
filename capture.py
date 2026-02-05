@@ -10,8 +10,8 @@ URL = "https://metropol.vartoslo.no/events"
 OUTPUT_PATH = "events.jpg"
 MAX_BYTES = 100_000
 VIEWPORT = {
-    "width": int(os.getenv("VIEWPORT_WIDTH", "1300")),
-    "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
+    "width": int(os.getenv("VIEWPORT_WIDTH", "2600")),
+    "height": int(os.getenv("VIEWPORT_HEIGHT", "1800")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
 SCROLL_OFFSET = 560
@@ -20,7 +20,7 @@ DEVICE_SCALE = int(os.getenv("DEVICE_SCALE", "2"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
-    70,
+    140,
     10,
     650,
     800
