@@ -44,6 +44,7 @@ async def capture_events():
             await browser.close()
 
     img = Image.open(io.BytesIO(screenshot_bytes))
+    crop_box = normalize_crop_box(crop_box, img.width, img.height)
     img_cropped = img.crop(crop_box).convert("RGB")
 
     save_jpeg_under_size(img_cropped, OUTPUT_PATH, MAX_BYTES)
@@ -77,6 +78,21 @@ async def get_cards_crop_box(page, card_selector: Optional[str]) -> Optional[Tup
     bottom = max(b["y"] + b["height"] for b in boxes)
 
     return (int(left), int(top), int(right), int(bottom))
+
+
+def normalize_crop_box(
+    crop_box: Tuple[int, int, int, int], image_width: int, image_height: int
+) -> Tuple[int, int, int, int]:
+    left, top, right, bottom = crop_box
+    left = max(0, min(left, image_width - 1))
+    top = max(0, min(top, image_height - 1))
+    right = max(left + 1, min(right, image_width))
+    bottom = max(top + 1, min(bottom, image_height))
+
+    if bottom <= top or right <= left:
+        return DEFAULT_CROP_BOX
+
+    return (left, top, right, bottom)
 
 
 async def dismiss_cookie_banner(page) -> None:
