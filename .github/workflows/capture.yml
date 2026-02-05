@@ -12,6 +12,7 @@ jobs:
     container: mcr.microsoft.com/playwright/python:v1.40.0-jammy
     env:
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     
     steps:
       - name: Checkout repository
