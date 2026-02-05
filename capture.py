@@ -13,9 +13,17 @@ VIEWPORT = {
     "width": int(os.getenv("VIEWPORT_WIDTH", "1400")),
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
+CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
+SCROLL_OFFSET = int(os.getenv("SCROLL_OFFSET", "800"))
+LEFT_TRIM = int(os.getenv("LEFT_TRIM", "0"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
-DEFAULT_CROP_BOX = (0, 150, VIEWPORT["width"], min(VIEWPORT["height"], 750))
+DEFAULT_CROP_BOX = (
+    LEFT_TRIM,
+    150,
+    LEFT_TRIM + (VIEWPORT["width"] // 2),
+    min(VIEWPORT["height"], 750),
+)
 
 # Provide a selector for the event cards via env if you can inspect it.
 # Example: CARD_SELECTOR="a.card" or ".event-card"
@@ -34,8 +42,9 @@ async def capture_events():
             await page.goto(URL, wait_until="networkidle")
             await page.wait_for_timeout(3000)
             await dismiss_cookie_banner(page)
+            await scroll_to_today_section(page, SCROLL_OFFSET)
 
-            crop_box = await get_cards_crop_box(page, CARD_SELECTOR)
+            crop_box = await get_cards_crop_box(page, CARD_SELECTOR, CARDS_TO_CAPTURE)
             if crop_box is None or not is_reasonable_crop(crop_box):
                 crop_box = DEFAULT_CROP_BOX
 
@@ -55,7 +64,9 @@ async def capture_events():
     print(f"Saved {OUTPUT_PATH} ({file_size:.1f} KB)")
 
 
-async def get_cards_crop_box(page, card_selector: Optional[str]) -> Optional[Tuple[int, int, int, int]]:
+async def get_cards_crop_box(
+    page, card_selector: Optional[str], count: int
+) -> Optional[Tuple[int, int, int, int]]:
     if not card_selector:
         return None
 
@@ -66,12 +77,12 @@ async def get_cards_crop_box(page, card_selector: Optional[str]) -> Optional[Tup
         return None
 
     boxes = []
-    for idx in range(4):
+    for idx in range(max(1, count)):
         box = await locator.nth(idx).bounding_box()
         if box:
             boxes.append(box)
 
-    if len(boxes) < 4:
+    if len(boxes) < max(1, count):
         return None
 
     left = min(b["x"] for b in boxes)
@@ -100,6 +111,18 @@ def normalize_crop_box(
 def is_reasonable_crop(crop_box: Tuple[int, int, int, int]) -> bool:
     left, top, right, bottom = crop_box
     return (right - left) >= 200 and (bottom - top) >= 200
+
+
+async def scroll_to_today_section(page, offset: int) -> None:
+    try:
+        heading = page.get_by_text("I Dag", exact=True).first
+        await heading.scroll_into_view_if_needed()
+        await page.wait_for_timeout(500)
+        if offset:
+            await page.evaluate("window.scrollBy(0, arguments[0])", offset)
+            await page.wait_for_timeout(500)
+    except Exception:
+        return
 
 
 async def dismiss_cookie_banner(page) -> None:
