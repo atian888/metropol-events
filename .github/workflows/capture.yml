@@ -17,17 +17,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          path: repo
       
       - name: Install dependencies
+        working-directory: ${{ github.workspace }}/repo
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
       
       - name: Capture screenshot
+        working-directory: ${{ github.workspace }}/repo
         run: python capture.py
       
       - name: Commit and push image
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/repo
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
