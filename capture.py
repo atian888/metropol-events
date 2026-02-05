@@ -9,10 +9,13 @@ from playwright.async_api import async_playwright
 URL = "https://metropol.vartoslo.no/events"
 OUTPUT_PATH = "events.jpg"
 MAX_BYTES = 100_000
-VIEWPORT = {"width": 1400, "height": 900}
+VIEWPORT = {
+    "width": int(os.getenv("VIEWPORT_WIDTH", "1400")),
+    "height": int(os.getenv("VIEWPORT_HEIGHT", "1400")),
+}
 
 # Default crop box (left, top, right, bottom). Used as fallback.
-DEFAULT_CROP_BOX = (0, 150, 1400, 750)
+DEFAULT_CROP_BOX = (50, 600, 800, 0)
 
 # Provide a selector for the event cards via env if you can inspect it.
 # Example: CARD_SELECTOR="a.card" or ".event-card"
@@ -30,6 +33,7 @@ async def capture_events():
         try:
             await page.goto(URL, wait_until="networkidle")
             await page.wait_for_timeout(3000)
+            await dismiss_cookie_banner(page)
 
             crop_box = await get_cards_crop_box(page, CARD_SELECTOR)
             if crop_box is None:
@@ -73,6 +77,31 @@ async def get_cards_crop_box(page, card_selector: Optional[str]) -> Optional[Tup
     bottom = max(b["y"] + b["height"] for b in boxes)
 
     return (int(left), int(top), int(right), int(bottom))
+
+
+async def dismiss_cookie_banner(page) -> None:
+    # Best-effort dismissal of common cookie popups.
+    selectors = [
+        'button:has-text("Godta")',
+        'button:has-text("Aksepter")',
+        'button:has-text("Tillat")',
+        'button:has-text("Accept")',
+        'button:has-text("Allow")',
+        'button:has-text("OK")',
+        '[aria-label*="cookie" i] button',
+        '[class*="cookie" i] button',
+        '[id*="cookie" i] button',
+    ]
+
+    for selector in selectors:
+        try:
+            button = page.locator(selector).first
+            if await button.is_visible():
+                await button.click()
+                await page.wait_for_timeout(500)
+                return
+        except Exception:
+            continue
 
 
 def save_jpeg_under_size(image: Image.Image, output_path: str, max_bytes: int) -> None:
