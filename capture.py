@@ -107,26 +107,16 @@ async def dismiss_cookie_banner(page) -> None:
 def save_jpeg_under_size(image: Image.Image, output_path: str, max_bytes: int) -> None:
     quality = 70
     min_quality = 30
-    scale = 1.0
 
     while True:
-        resized = image
-        if scale < 1.0:
-            new_w = max(1, int(image.width * scale))
-            new_h = max(1, int(image.height * scale))
-            resized = image.resize((new_w, new_h), Image.LANCZOS)
-
-        resized.save(output_path, "JPEG", quality=quality, optimize=True)
+        image.save(output_path, "JPEG", quality=quality, optimize=True)
         if os.path.getsize(output_path) <= max_bytes:
             return
 
         if quality > min_quality:
             quality = max(min_quality, int(quality * 0.9))
             continue
-
-        scale = scale * 0.9
-        if scale < 0.2:
-            return
+        return
 
 if __name__ == "__main__":
     asyncio.run(capture_events())
