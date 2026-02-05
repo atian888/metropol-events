@@ -14,15 +14,15 @@ VIEWPORT = {
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
-SCROLL_OFFSET = int(os.getenv("SCROLL_OFFSET", "800"))
+SCROLL_OFFSET = 800
 LEFT_TRIM = int(os.getenv("LEFT_TRIM", "0"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
     0,
-    650,
-    800,
-    min(VIEWPORT["height"], 750),
+    0,
+    700,
+    900
 )
 
 # Provide a selector for the event cards via env if you can inspect it.
