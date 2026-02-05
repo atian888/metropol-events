@@ -10,7 +10,7 @@ URL = "https://metropol.vartoslo.no/events"
 OUTPUT_PATH = "events.jpg"
 MAX_BYTES = 100_000
 VIEWPORT = {
-    "width": int(os.getenv("VIEWPORT_WIDTH", "1400")),
+    "width": int(os.getenv("VIEWPORT_WIDTH", "1300")),
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
 }
 CARDS_TO_CAPTURE = int(os.getenv("CARDS_TO_CAPTURE", "2"))
@@ -19,9 +19,9 @@ LEFT_TRIM = int(os.getenv("LEFT_TRIM", "0"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
-    LEFT_TRIM,
-    150,
-    LEFT_TRIM + (VIEWPORT["width"] // 2),
+    0,
+    650,
+    800,
     min(VIEWPORT["height"], 750),
 )
 
