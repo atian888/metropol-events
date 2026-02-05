@@ -27,6 +27,7 @@ jobs:
         run: python capture.py
       
       - name: Commit and push image
+        working-directory: ${{ github.workspace }}
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
