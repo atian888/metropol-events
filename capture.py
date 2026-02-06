@@ -59,6 +59,10 @@ async def capture_events():
         crop_box = normalize_crop_box(DEFAULT_CROP_BOX, img.width, img.height)
     img_cropped = img.crop(crop_box).convert("RGB")
 
+    # Scale down to 50% with highest quality resampling
+    half_size = (img_cropped.width // 2, img_cropped.height // 2)
+    img_cropped = img_cropped.resize(half_size, Image.LANCZOS)
+
     save_jpeg_under_size(img_cropped, OUTPUT_PATH, MAX_BYTES)
 
     file_size = os.path.getsize(OUTPUT_PATH) / 1024
