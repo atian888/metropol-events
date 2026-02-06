@@ -22,8 +22,8 @@ DEVICE_SCALE = int(os.getenv("DEVICE_SCALE", "2"))
 DEFAULT_CROP_BOX = (
     140,
     10,
-    1700,
-    1600
+    1300,
+    1570
 )
 
 # Provide a selector for the event cards via env if you can inspect it.
