@@ -23,7 +23,7 @@ DEFAULT_CROP_BOX = (
     140,
     10,
     1700,
-    1700
+    1600
 )
 
 # Provide a selector for the event cards via env if you can inspect it.
