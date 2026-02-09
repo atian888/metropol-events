@@ -7,8 +7,8 @@ from PIL import Image
 from playwright.async_api import async_playwright
 
 URL = "https://metropol.vartoslo.no/events"
-OUTPUT_PATH = "events.jpg"
-MAX_BYTES = 150_000
+OUTPUT_PATH = "events.webp"
+MAX_BYTES = 120_000
 VIEWPORT = {
     "width": int(os.getenv("VIEWPORT_WIDTH", "1300")),
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
@@ -63,7 +63,7 @@ async def capture_events():
     half_size = (img_cropped.width // 2, img_cropped.height // 2)
     img_cropped = img_cropped.resize(half_size, Image.LANCZOS)
 
-    save_jpeg_under_size(img_cropped, OUTPUT_PATH, MAX_BYTES)
+    save_webp_under_size(img_cropped, OUTPUT_PATH, MAX_BYTES)
 
     file_size = os.path.getsize(OUTPUT_PATH) / 1024
     print(f"Saved {OUTPUT_PATH} ({file_size:.1f} KB)")
@@ -165,12 +165,13 @@ async def dismiss_cookie_banner(page) -> None:
             continue
 
 
-def save_jpeg_under_size(image: Image.Image, output_path: str, max_bytes: int) -> None:
-    quality = 70
+def save_webp_under_size(image: Image.Image, output_path: str, max_bytes: int) -> None:
+    """Save as WebP, starting at high quality and reducing until within max_bytes."""
+    quality = 90
     min_quality = 30
 
     while True:
-        image.save(output_path, "JPEG", quality=quality, optimize=True)
+        image.save(output_path, "WEBP", quality=quality, method=6)
         if os.path.getsize(output_path) <= max_bytes:
             return
 
