@@ -8,7 +8,7 @@ from playwright.async_api import async_playwright
 
 URL = "https://metropol.vartoslo.no/events"
 OUTPUT_PATH = "events.jpg"
-MAX_BYTES = 100_000
+MAX_BYTES = 150_000
 VIEWPORT = {
     "width": int(os.getenv("VIEWPORT_WIDTH", "1300")),
     "height": int(os.getenv("VIEWPORT_HEIGHT", "900")),
@@ -20,10 +20,10 @@ DEVICE_SCALE = int(os.getenv("DEVICE_SCALE", "2"))
 
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
-    145,
-    10,
-    1300,
-    1580
+    147,
+    12,
+    1296,
+    1578
 )
 
 # Provide a selector for the event cards via env if you can inspect it.
