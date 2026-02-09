@@ -21,8 +21,8 @@ DEVICE_SCALE = int(os.getenv("DEVICE_SCALE", "2"))
 # Default crop box (left, top, right, bottom). Used as fallback.
 DEFAULT_CROP_BOX = (
     147,
-    12,
-    1296,
+    13,
+    1295,
     1578
 )
 
